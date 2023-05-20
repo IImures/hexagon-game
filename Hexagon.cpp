@@ -10,7 +10,7 @@ Hexagon::Hexagon(double rad) {
     radius = rad;
     this->hexagon = sf::CircleShape(radius, 6);
     hexagon.setFillColor(sf::Color(255,255,255));
-    hexagon.setRotation(60);
+    //hexagon.setRotation(60);
     hexagon.setOutlineColor(sf::Color(0,0,0));
     hexagon.setOutlineThickness(5);
 
@@ -75,19 +75,20 @@ void Hexagon::setPosition(float x, float y) {
 
 
 
-void Hexagon::checkForClick(sf::Event event) {
-    if ((event.mouseButton.x <= (hexagon.getPosition().x + radius * 2) &&
+bool Hexagon::checkForClick(sf::Event event) {
+    if ((event.mouseButton.x < (hexagon.getPosition().x + radius * 2 - 10) &&
          event.mouseButton.x > hexagon.getPosition().x) &&
-        (event.mouseButton.y <= (hexagon.getPosition().y + radius * 2) &&
+        (event.mouseButton.y < (hexagon.getPosition().y + radius * 2 - 10) &&
          event.mouseButton.y > hexagon.getPosition().y)) {
-        std::cout<<hexagon.getPosition().y<<" "<<hexagon.getPosition().x<<"\n";
-        std::cout<<event.mouseButton.y<<" "<<event.mouseButton.x<<"\n";
-        hexagon.setFillColor(sf::Color(rand()%255,rand()%255,rand()%255));
+//        std::cout<<hexagon.getPosition().y<<" "<<hexagon.getPosition().x<<"\n";
+//        std::cout<<event.mouseButton.y<<" "<<event.mouseButton.x<<"\n";
+        //hexagon.setFillColor(sf::Color(rand()%255,rand()%255,rand()%255));
+        return true;
     }
 }
 
 sf::Vector2f Hexagon::getPosition() {
-    return position;
+    return hexagon.getPosition();
 }
 
 

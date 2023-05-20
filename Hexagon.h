@@ -25,7 +25,7 @@ public:
 
     sf::Vector2f getPosition();
 
-    void checkForClick(sf::Event event);
+    bool checkForClick(sf::Event event);
 
     bool getIsVisible();
 
