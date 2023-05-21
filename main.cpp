@@ -11,7 +11,6 @@ Hexagon* usedHexagon;
 float HEX_SIZE = 25;
 bool playerTurn = true;
 bool isPlacing = false;
-sf::Vector2f currHex; // coordinates of current used hexagon used to check for enemies hexagons
 
 std::array<Hexagon*, 10> b0 = {nullptr, nullptr, nullptr, nullptr, new Hexagon(HEX_SIZE,1), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE, 0)};
 std::array<Hexagon*, 10> b1 = {nullptr, nullptr, nullptr, new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE)};
@@ -35,7 +34,7 @@ auto drawAll() -> void;
 
 auto drawOutline(int posX, int posY) ->void;
 
-auto findPosition() ->void;
+auto findPosition(Hexagon *target) ->sf::Vector2f;
 
 auto clearOtline()->void;
 
@@ -69,35 +68,41 @@ auto drawAll() -> void{
                 x += 50;
                 continue;
             }
-            hx->setPosition(width/4 + x, height/4 +  y);
+            hx->setPosition(width/4.f + x, height/4.f +  y);
             hx->draw(window);
             x+=50;
         }
         y+=40;
     }
 
-    if(selectedHexagon != nullptr) findPosition();
+    if(selectedHexagon != nullptr){
+        auto vec = findPosition(selectedHexagon);
+        if(playerTurn == b[vec.y][vec.x]->getPlayer() ) drawOutline(vec.x, vec.y);
+        else if (playerTurn == b[vec.y][vec.x]->getPlayer()) drawOutline(vec.x, vec.y);
+        usedHexagon = selectedHexagon;
+        selectedHexagon = nullptr;
+    }
 }
 
-auto findPosition()->void{
+auto findPosition(Hexagon *target)->sf::Vector2f{
     for(int i = 0; i < b.size(); i++){
         auto hexTab = b[i];
         for(int j = 0; j < hexTab.size(); j++){
             if(b[i][j] == nullptr) continue;
-            if(b[i][j]->getPosition().x == selectedHexagon->getPosition().x &&
-            b[i][j]->getPosition().y == selectedHexagon->getPosition().y){
+            if(b[i][j]->getPosition().x == target->getPosition().x &&
+            b[i][j]->getPosition().y == target->getPosition().y){
 //                std::cout<< b[i][j]->getPosition().x << " " << b[i][j]->getPosition().y << '\n';
 //                std::cout<< selectedHexagon->getPosition().x << " " << selectedHexagon->getPosition().y << '\n';
                 std::cout << "Position: (" << i << ", " << j << ")\n";
-                currHex.x = j;
-                currHex.y = i;
+                sf::Vector2f vec;
+                vec.x = j;
+                vec.y = i;
+                return vec;
                 if(playerTurn == b[i][j]->getPlayer() ) drawOutline(j, i);
                 else if (playerTurn == b[i][j]->getPlayer()) drawOutline(j, i);
             }
         }
     }
-    usedHexagon = selectedHexagon;
-    selectedHexagon = nullptr;
 }
 
 auto drawOutline(int posX, int posY)->void {
@@ -120,19 +125,19 @@ auto drawOutline(int posX, int posY)->void {
                 !nearHexagon->isCaptured()) {
                 nearHexagon->hexagon.setOutlineColor(sf::Color::Green);
                 nearHexagon->select(true);
+            }
 
-                for (auto & neighborFar : neighbors) {
-                    int farNeighborX = neighborX + neighborFar[0];
-                    int farNeighborY = neighborY + neighborFar[1];
+            for (auto & neighborFar : neighbors) {
+                int farNeighborX = neighborX + neighborFar[0];
+                int farNeighborY = neighborY + neighborFar[1];
 
-                    Hexagon *farHexagon = b[farNeighborY][farNeighborX];
+                Hexagon *farHexagon = b[farNeighborY][farNeighborX];
 
-                    if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
-                        if (farHexagon->hexagon.getOutlineColor() == sf::Color::Black &&
-                            !farHexagon->isCaptured()) {
-                            farHexagon->hexagon.setOutlineColor(sf::Color::Yellow);
-                            farHexagon->setSecondRow(true);
-                        }
+                if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
+                    if (farHexagon->hexagon.getOutlineColor() == sf::Color::Black &&
+                    !farHexagon->isCaptured()) {
+                        farHexagon->hexagon.setOutlineColor(sf::Color::Yellow);
+                        farHexagon->setSecondRow(true);
                     }
                 }
             }
@@ -157,19 +162,18 @@ auto drawOutline(int posX, int posY)->void {
                 !nearHexagon->isCaptured()) {
                 nearHexagon->hexagon.setOutlineColor(sf::Color::Green);
                 nearHexagon->select(true);
+            }
+            for (auto & neighborFar : neighbors) {
+                int farNeighborX = neighborX + neighborFar[0];
+                int farNeighborY = neighborY + neighborFar[1];
 
-                for (auto & neighborFar : neighbors) {
-                    int farNeighborX = neighborX + neighborFar[0];
-                    int farNeighborY = neighborY + neighborFar[1];
+                Hexagon *farHexagon = b[farNeighborY][farNeighborX];
 
-                    Hexagon *farHexagon = b[farNeighborY][farNeighborX];
-
-                    if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
-                        if (farHexagon->hexagon.getOutlineColor() == sf::Color::Black &&
-                            !farHexagon->isCaptured()) {
-                            farHexagon->hexagon.setOutlineColor(sf::Color::Yellow);
-                            farHexagon->setSecondRow(true);
-                        }
+                if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
+                    if (farHexagon->hexagon.getOutlineColor() == sf::Color::Black &&
+                    !farHexagon->isCaptured()) {
+                        farHexagon->hexagon.setOutlineColor(sf::Color::Yellow);
+                        farHexagon->setSecondRow(true);
                     }
                 }
             }
@@ -194,19 +198,19 @@ auto drawOutline(int posX, int posY)->void {
                 !nearHexagon->isCaptured()) {
                 nearHexagon->hexagon.setOutlineColor(sf::Color::Green);
                 nearHexagon->select(true);
+            }
 
-                for (auto & neighborFar : neighbors) {
-                    int farNeighborX = neighborX + neighborFar[0];
-                    int farNeighborY = neighborY + neighborFar[1];
+            for (auto & neighborFar : neighbors) {
+                int farNeighborX = neighborX + neighborFar[0];
+                int farNeighborY = neighborY + neighborFar[1];
 
-                    Hexagon *farHexagon = b[farNeighborY][farNeighborX];
+                Hexagon *farHexagon = b[farNeighborY][farNeighborX];
 
-                    if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
-                        if (farHexagon->hexagon.getOutlineColor() == sf::Color::Black &&
-                            !farHexagon->isCaptured()) {
-                            farHexagon->hexagon.setOutlineColor(sf::Color::Yellow);
-                            farHexagon->setSecondRow(true);
-                        }
+                if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
+                    if (farHexagon->hexagon.getOutlineColor() == sf::Color::Black &&
+                    !farHexagon->isCaptured()) {
+                        farHexagon->hexagon.setOutlineColor(sf::Color::Yellow);
+                        farHexagon->setSecondRow(true);
                     }
                 }
             }
@@ -253,19 +257,20 @@ auto placeHexagon(Hexagon *hex)->void{
 }
 
 void checkForNeighbors(Hexagon* hex) {
-    int posY, posX;
+    sf::Vector2f vec = findPosition(hex);
+    int posY = vec.y, posX= vec.x;
 
-    for (int i = 0; i < b.size(); i++) {
-        auto hexTab = b[i];
-        for (int j = 0; j < hexTab.size(); j++) {
-            if (b[i][j] == nullptr) continue;
-            if (b[i][j]->getPosition().x == hex->getPosition().x &&
-                b[i][j]->getPosition().y == hex->getPosition().y) {
-                posX = j;
-                posY = i;
-            }
-        }
-    }
+//    for (int i = 0; i < b.size(); i++) {
+//        auto hexTab = b[i];
+//        for (int j = 0; j < hexTab.size(); j++) {
+//            if (b[i][j] == nullptr) continue;
+//            if (b[i][j]->getPosition().x == hex->getPosition().x &&
+//                b[i][j]->getPosition().y == hex->getPosition().y) {
+//                posX = j;
+//                posY = i;
+//            }
+//        }
+//    }
     if (posY < 4) {
         std::array<int, 6> neighbors[] = {
                 {-1, 0},
