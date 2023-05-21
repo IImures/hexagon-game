@@ -18,6 +18,7 @@ Hexagon::Hexagon(double rad) {
 Hexagon::Hexagon(double rad, int playerNumber) {
     radius = rad;
     player = playerNumber;
+    captured = true;
     this->hexagon = sf::CircleShape(radius, 6);
     if(player == 1) hexagon.setFillColor(sf::Color::Red);
     if(player == 0) hexagon.setFillColor(sf::Color::Blue);
@@ -87,24 +88,34 @@ sf::Vector2f Hexagon::getPosition() {
     return hexagon.getPosition();
 }
 
-bool Hexagon::isCaptured() {
-    if(player == 0 || player == 1) return true;
+bool Hexagon::isCaptured() const {
+    return captured;
     return false;
 }
 
-int Hexagon::getPlayer() const {
+bool Hexagon::getPlayer() const {
     return player;
 }
 
-void Hexagon::capture(int playerCaptured) {
-    if(playerCaptured == 1){
+void Hexagon::capture(bool playerCaptured) {
+    if(playerCaptured){
+        captured = true;
         hexagon.setFillColor(sf::Color::Red);
         player = 1;
     }
-    if(playerCaptured == 0){
+    if(!playerCaptured){
+        captured = true;
         hexagon.setFillColor(sf::Color::Blue);
         player = 0;
     }
+}
+
+bool Hexagon::isSelected() {
+    return selected;
+}
+
+void Hexagon::select(bool select) {
+    selected = select;
 }
 
 //void Hexagon::draw(sf::RenderTarget &target, sf::RenderStates states) const {

@@ -6,10 +6,9 @@
 
 const int width = 1920;
 const int height = 1080;
-bool isClicked = false;
 Hexagon* selectedHexagon;
 float HEX_SIZE = 25;
-int playerTurn = 1;
+bool playerTurn = true;
 bool isPlacing = false;
 std::array<Hexagon*, 10> b0 = {nullptr, nullptr, nullptr, nullptr, new Hexagon(HEX_SIZE,1), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE, 0)};
 std::array<Hexagon*, 10> b1 = {nullptr, nullptr, nullptr, new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE)};
@@ -84,12 +83,12 @@ auto findPosition()->void{
             b[i][j]->getPosition().y == selectedHexagon->getPosition().y){
 //                std::cout<< b[i][j]->getPosition().x << " " << b[i][j]->getPosition().y << '\n';
 //                std::cout<< selectedHexagon->getPosition().x << " " << selectedHexagon->getPosition().y << '\n';
-//                std::cout << "Position: (" << i << ", " << j << ")\n";
+                std::cout << "Position: (" << i << ", " << j << ")\n";
 //                sf::Vector2f pos;
 //                pos.x = j;
 //                pos.y = i;
 //                return pos;
-                if(playerTurn == b[i][j]->getPlayer()) drawOutline(j, i);
+                if(playerTurn == b[i][j]->getPlayer() ) drawOutline(j, i);
                 else if (playerTurn == b[i][j]->getPlayer()) drawOutline(j, i);
             }
         }
@@ -109,10 +108,13 @@ auto drawOutline(int posX, int posY)->void {
             int neighborX = posX + neighbors[i][0];
             int neighborY = posY + neighbors[i][1];
 
+            std::cout<< neighborX << " " << neighborY << '\n';
+
             if (neighborY >= 0 && neighborY < b.size() && neighborX >= 0 && neighborX < b[neighborY].size() &&
                 b[neighborY][neighborX] != nullptr &&
                 !b[neighborY][neighborX]->isCaptured()) {
                 b[neighborY][neighborX]->hexagon.setOutlineColor(sf::Color::Green);
+                b[neighborY][neighborX]->select(true);
             }
         }
     }else if(posY == 4){
@@ -132,6 +134,7 @@ auto drawOutline(int posX, int posY)->void {
                 b[neighborY][neighborX] != nullptr &&
                 !b[neighborY][neighborX]->isCaptured()) {
                 b[neighborY][neighborX]->hexagon.setOutlineColor(sf::Color::Green);
+                b[neighborY][neighborX]->select(true);
             }
         }
     }else{
@@ -151,6 +154,7 @@ auto drawOutline(int posX, int posY)->void {
                 b[neighborY][neighborX] != nullptr &&
                 !b[neighborY][neighborX]->isCaptured()) {
                 b[neighborY][neighborX]->hexagon.setOutlineColor(sf::Color::Green);
+                b[neighborY][neighborX]->select(true);
             }
         }
     }
@@ -167,9 +171,20 @@ auto clearOtline()->void{
 }
 
 auto placeHexagon(Hexagon *hexagon)->void{
-    if(hexagon->hexagon.getOutlineColor() == sf::Color::Green) hexagon->capture(playerTurn);
+//    if(hexagon->hexagon.getOutlineColor() == sf::Color::Green) hexagon->capture(playerTurn);
+//    else clearOtline();
+//    isPlacing = false;
+
+
+    if(hexagon->isSelected()){
+        hexagon->capture(playerTurn);
+        playerTurn = !playerTurn;
+    }
     else clearOtline();
-    if(hexagon->hexagon.getFillColor() == sf::Color::Red) std::cout<< " Red\n";
+    for(auto hexTab : b)
+        for(auto hx : hexTab)
+            if(hx == nullptr) continue;
+            else hx->select(false);
     isPlacing = false;
 }
 

@@ -34,14 +34,20 @@ public:
 //    void draw(sf::RenderTarget& target, sf::RenderStates states) const;
     void draw(sf::RenderWindow& window) const;
 
-    bool isCaptured();
+    bool isCaptured() const;
 
-    void capture(int playerCaptured);
+    bool isSelected();
 
-    int getPlayer() const;
+    void select(bool select);
+
+    void capture(bool playerCaptured);
+
+    bool getPlayer() const;
 
 private:
-    int player = 3;
+    bool captured;
+    bool selected = false;
+    bool player;
     bool isVisible = true;
     float rotation;
     float radius;
