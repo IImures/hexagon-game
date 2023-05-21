@@ -101,12 +101,12 @@ void Hexagon::capture(bool playerCaptured) {
     if(playerCaptured){
         captured = true;
         hexagon.setFillColor(sf::Color::Red);
-        player = 1;
+        player = true;
     }
     if(!playerCaptured){
         captured = true;
         hexagon.setFillColor(sf::Color::Blue);
-        player = 0;
+        player = false;
     }
 }
 
@@ -116,6 +116,21 @@ bool Hexagon::isSelected() {
 
 void Hexagon::select(bool select) {
     selected = select;
+}
+
+void Hexagon::setSecondRow(bool select) {
+    secondRow = select;
+}
+
+bool Hexagon::isSecondRow() {
+    return secondRow;
+}
+
+void Hexagon::unCapture() {
+    hexagon.setFillColor(sf::Color::White);
+    secondRow = false;
+    selected = false;
+    captured = false;
 }
 
 //void Hexagon::draw(sf::RenderTarget &target, sf::RenderStates states) const {

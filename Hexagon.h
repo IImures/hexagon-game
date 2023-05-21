@@ -40,12 +40,19 @@ public:
 
     void select(bool select);
 
+    void setSecondRow(bool select);
+
+    bool isSecondRow();
+
     void capture(bool playerCaptured);
+
+    void unCapture();
 
     bool getPlayer() const;
 
 private:
     bool captured;
+    bool secondRow = false;
     bool selected = false;
     bool player;
     bool isVisible = true;
