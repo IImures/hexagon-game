@@ -42,10 +42,13 @@ auto placeHexagon(Hexagon *hexagon)->void;
 
 auto checkForNeighbors(Hexagon* hex) ->void;
 
+auto checkForResults() -> void;
+
 int main() {
 
     while (window.isOpen()) {
         window.clear();
+        checkForResults(); //win or lose
 
         pollEvents();
         drawAll();
@@ -77,10 +80,10 @@ auto drawAll() -> void{
 
     if(selectedHexagon != nullptr){
         auto vec = findPosition(selectedHexagon);
-        if(playerTurn == b[vec.y][vec.x]->getPlayer() ) drawOutline(vec.x, vec.y);
-        else if (playerTurn == b[vec.y][vec.x]->getPlayer()) drawOutline(vec.x, vec.y);
+        if(playerTurn == b[vec.y][vec.x]->getPlayer() && b[vec.y][vec.x]->isCaptured()) drawOutline(vec.x, vec.y);
+//        else if (playerTurn == b[vec.y][vec.x]->getPlayer()&& b[vec.y][vec.x]->isCaptured() ) drawOutline(vec.x, vec.y);
         usedHexagon = selectedHexagon;
-        selectedHexagon = nullptr;
+        //selectedHexagon = nullptr;
     }
 }
 
@@ -91,15 +94,10 @@ auto findPosition(Hexagon *target)->sf::Vector2f{
             if(b[i][j] == nullptr) continue;
             if(b[i][j]->getPosition().x == target->getPosition().x &&
             b[i][j]->getPosition().y == target->getPosition().y){
-//                std::cout<< b[i][j]->getPosition().x << " " << b[i][j]->getPosition().y << '\n';
-//                std::cout<< selectedHexagon->getPosition().x << " " << selectedHexagon->getPosition().y << '\n';
-                std::cout << "Position: (" << i << ", " << j << ")\n";
                 sf::Vector2f vec;
                 vec.x = j;
                 vec.y = i;
                 return vec;
-                if(playerTurn == b[i][j]->getPlayer() ) drawOutline(j, i);
-                else if (playerTurn == b[i][j]->getPlayer()) drawOutline(j, i);
             }
         }
     }
@@ -115,9 +113,7 @@ auto drawOutline(int posX, int posY)->void {
         for (auto & neighbor : neighbors) {
             int neighborX = posX + neighbor[0];
             int neighborY = posY + neighbor[1];
-//        for (auto & neighbor : neighbors) {
-//            int neighborX = posX + neighbor[0];
-//            int neighborY = posY + neighbor[1];
+
             Hexagon *nearHexagon = b[neighborY][neighborX];
 
             if (neighborY >= 0 && neighborY < b.size() && neighborX >= 0 && neighborX < b[neighborY].size() &&
@@ -130,6 +126,8 @@ auto drawOutline(int posX, int posY)->void {
             for (auto & neighborFar : neighbors) {
                 int farNeighborX = neighborX + neighborFar[0];
                 int farNeighborY = neighborY + neighborFar[1];
+
+                std::cout<< farNeighborY << " " << farNeighborX << '\n';
 
                 Hexagon *farHexagon = b[farNeighborY][farNeighborX];
 
@@ -229,11 +227,6 @@ auto clearOtline()->void{
 }
 
 auto placeHexagon(Hexagon *hex)->void{
-//    if(hexagon->hexagon.getOutlineColor() == sf::Color::Green) hexagon->capture(playerTurn);
-//    else clearOtline();
-//    isPlacing = false;
-
-
     if(hex->isSelected()){
         hex->capture(playerTurn);
         playerTurn = !playerTurn;
@@ -245,32 +238,24 @@ auto placeHexagon(Hexagon *hex)->void{
         checkForNeighbors(hex);
     }
     else clearOtline();
-    for(auto hexTab : b)
-        for(auto hx : hexTab)
-            if(hx == nullptr) continue;
-            else{
-                hx->setSecondRow(false);
+    for(auto hexTab : b) {
+        for (auto hx: hexTab) {
+            if (hx == nullptr) continue;
+            else {
+                hx->setSecondRow(false); // maybe place it into clearOutlinefunc
                 hx->select(false);
             }
-    isPlacing = false;
-
+        }
+    }
+    selectedHexagon = nullptr;
+    usedHexagon = nullptr;
+    isPlacing =false;
 }
 
 void checkForNeighbors(Hexagon* hex) {
     sf::Vector2f vec = findPosition(hex);
     int posY = vec.y, posX= vec.x;
 
-//    for (int i = 0; i < b.size(); i++) {
-//        auto hexTab = b[i];
-//        for (int j = 0; j < hexTab.size(); j++) {
-//            if (b[i][j] == nullptr) continue;
-//            if (b[i][j]->getPosition().x == hex->getPosition().x &&
-//                b[i][j]->getPosition().y == hex->getPosition().y) {
-//                posX = j;
-//                posY = i;
-//            }
-//        }
-//    }
     if (posY < 4) {
         std::array<int, 6> neighbors[] = {
                 {-1, 0},
@@ -335,6 +320,28 @@ void checkForNeighbors(Hexagon* hex) {
             }
         }
         }
+}
+
+auto checkForResults() -> void {
+    int redHex, blueHex, totalHex;
+    for(auto hexTab : b){
+        for(auto hx : hexTab){
+            if(hx == nullptr) continue;
+            totalHex++;
+            if(hx->getPlayer()) //false - blue, true - red
+                redHex++;
+            else
+                blueHex++;
+        }
+    }
+    if(true); // no red
+    if(true); // no blue
+    if(true); // someone is not able to move;
+    if(redHex + blueHex == totalHex){
+        while (true)
+            std::cout<<"WIIIIIIIIIIN\n";
+    }
+    //std::cout<<"Total: " << totalHex << " redHex: " << redHex << " blueHex: " << blueHex << '\n';
 }
 
 auto pollEvents() -> void{
