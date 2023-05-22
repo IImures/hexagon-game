@@ -7,7 +7,7 @@
 #include <SFML/Graphics.hpp>
 
 
-class Hexagon {
+class Hexagon : sf::Drawable {
 public:
     sf::CircleShape hexagon;
 
@@ -63,6 +63,8 @@ private:
     sf::Vector2f position;
 
 //    void calculatePosition();
+
+    virtual void draw(sf::RenderTarget& target,sf::RenderStates states) const;
 };
 
 

@@ -82,6 +82,7 @@ bool Hexagon::checkForClick(sf::Event event) {
          event.mouseButton.y > hexagon.getPosition().y)) {
         return true;
     }
+    //return false;
 }
 
 sf::Vector2f Hexagon::getPosition() {
@@ -131,6 +132,11 @@ void Hexagon::unCapture() {
     secondRow = false;
     selected = false;
     captured = false;
+}
+
+void Hexagon::draw(sf::RenderTarget &target, sf::RenderStates states) const {
+    target.draw(hexagon, states);
+
 }
 
 //void Hexagon::draw(sf::RenderTarget &target, sf::RenderStates states) const {

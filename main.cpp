@@ -1,7 +1,10 @@
 
 #include <iostream>
 #include <algorithm>
+
+#include "Button.h"
 #include "Hexagon.h"
+
 #include <SFML/Graphics.hpp>
 
 const int width = 1920;
@@ -12,6 +15,15 @@ float HEX_SIZE = 25;
 bool playerTurn = true;
 bool isPlacing = false;
 
+bool inMenu = true;
+
+std::array<Button*, 3> menuButtons = {
+        new Button(300,70,"New Game"),
+        new Button(300,70,"Score"),
+        new Button(300,70,"Exit")
+};
+sf::Text title;
+
 std::array<Hexagon*, 10> b0 = {nullptr, nullptr, nullptr, nullptr, new Hexagon(HEX_SIZE,1), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE, 0)};
 std::array<Hexagon*, 10> b1 = {nullptr, nullptr, nullptr, new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE)};
 std::array<Hexagon*, 10> b2 = {nullptr, nullptr, new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), nullptr};
@@ -21,7 +33,7 @@ std::array<Hexagon*, 10> b5 = {nullptr, new Hexagon(HEX_SIZE), new Hexagon(HEX_S
 std::array<Hexagon*, 10> b6 = {nullptr, nullptr, new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), nullptr};
 std::array<Hexagon*, 10> b7 = {nullptr, nullptr, nullptr, new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE)};
 std::array<Hexagon*, 10> b8 = {nullptr, nullptr, nullptr, nullptr, new Hexagon(HEX_SIZE,1), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE, 0)};
-std::array<std::array<Hexagon*, 10>, 9> b= { b0, b1, b2, b3, b4, b5, b6, b7, b8 };
+std::array<std::array<Hexagon*, 10>, 9> b = { b0, b1, b2, b3, b4, b5, b6, b7, b8 };
 
 sf::RenderWindow window(
         sf::VideoMode({width, height}),
@@ -31,6 +43,10 @@ sf::RenderWindow window(
 auto pollEvents() -> void;
 
 auto drawAll() -> void;
+
+auto drawGame() ->void;
+
+auto drawMenu() -> void;
 
 auto drawOutline(int posX, int posY) ->void;
 
@@ -44,11 +60,27 @@ auto checkForNeighbors(Hexagon* hex) ->void;
 
 auto checkForResults() -> void;
 
+auto isPossibleToGo(Hexagon *hexagon) -> bool;
+
+auto pollHexagons(sf::Event event)->void;
+
+auto pollButtons(sf::Event event) ->void;
+
 int main() {
+
+    sf::Font font;
+    if(!font.loadFromFile("/Users/vladyslavkalinchenko/CLionProjects/PJC_PRO1/Assets/arial.ttf")){
+        std::cout<<"Failed to load title font\n";
+    }
+    title.setFont(font);
+    title.setCharacterSize(50);
+    title.setFillColor(sf::Color::White);
+    title.setString("Hexagon Game");
 
     while (window.isOpen()) {
         window.clear();
-        checkForResults(); //win or lose
+
+        if(!inMenu) checkForResults();
 
         pollEvents();
         drawAll();
@@ -59,7 +91,26 @@ int main() {
     return 0;
 }
 
-auto drawAll() -> void{
+auto drawAll() -> void {
+    if (inMenu) drawMenu();
+    else drawGame();
+
+}
+auto drawMenu() -> void {
+    int y = 0;
+    for(auto button : menuButtons){
+        button->setPosition(width/2 - (button->getWight()/2), (height / 2 - button->getHeight()) + y);
+        button->draw(window);
+        y+=100;
+    }
+    sf::Vector2f titlePos;
+    titlePos.x = width/2 - (menuButtons[0]->getWight()/2);
+    titlePos.y = (height / 2 - menuButtons[0]->getHeight()) - 100;
+    title.setPosition(titlePos.x, titlePos.y);
+    window.draw(title);
+}
+
+auto drawGame() -> void {
     int y = 0;
     for(auto hexTab : b){
         int x = 0;
@@ -72,6 +123,7 @@ auto drawAll() -> void{
                 continue;
             }
             hx->setPosition(width/4.f + x, height/4.f +  y);
+            //window.draw(hx);
             hx->draw(window);
             x+=50;
         }
@@ -87,7 +139,7 @@ auto drawAll() -> void{
     }
 }
 
-auto findPosition(Hexagon *target)->sf::Vector2f{
+auto findPosition(Hexagon *target) -> sf::Vector2f {
     for(int i = 0; i < b.size(); i++){
         auto hexTab = b[i];
         for(int j = 0; j < hexTab.size(); j++){
@@ -127,7 +179,7 @@ auto drawOutline(int posX, int posY)->void {
                 int farNeighborX = neighborX + neighborFar[0];
                 int farNeighborY = neighborY + neighborFar[1];
 
-                std::cout<< farNeighborY << " " << farNeighborX << '\n';
+                //std::cout<< farNeighborY << " " << farNeighborX << '\n';
 
                 Hexagon *farHexagon = b[farNeighborY][farNeighborX];
 
@@ -322,26 +374,179 @@ void checkForNeighbors(Hexagon* hex) {
         }
 }
 
+auto isPossibleToGo(Hexagon *hexagon) -> bool{
+    sf::Vector2f position = findPosition(hexagon);
+    int posY = position.y;
+    int posX = position.x;
+    if(posY < 4) {
+        std::array<int, 6> neighbors[] = {
+                {-1, 0}, {-1, 1}, {0, 1},
+                {1, 0}, {1, -1}, {0, -1}
+        };
+
+        for (auto & neighbor : neighbors) {
+            int neighborX = posX + neighbor[0];
+            int neighborY = posY + neighbor[1];
+
+            Hexagon *nearHexagon = b[neighborY][neighborX];
+
+            if (neighborY >= 0 && neighborY < b.size() && neighborX >= 0 && neighborX < b[neighborY].size() &&
+                nearHexagon != nullptr &&
+                !nearHexagon->isCaptured()) {
+                return true;
+            }
+
+            for (auto & neighborFar : neighbors) {
+                int farNeighborX = neighborX + neighborFar[0];
+                int farNeighborY = neighborY + neighborFar[1];
+
+                //std::cout<< farNeighborY << " " << farNeighborX << '\n';
+
+                Hexagon *farHexagon = b[farNeighborY][farNeighborX];
+
+                if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
+                    if (!farHexagon->isCaptured()) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }else if(posY == 4){
+        std::array<int, 6> neighbors[] = {
+                {-1, 0},
+                {1, 1},
+                {0,  1},
+                {1,  0},
+                {1,  -1},
+                {0,  -1}
+        };
+        for (auto & neighbor : neighbors) {
+            int neighborX = posX + neighbor[0];
+            int neighborY = posY + neighbor[1];
+
+            Hexagon *nearHexagon = b[neighborY][neighborX];
+
+            if (neighborY >= 0 && neighborY < b.size() && neighborX >= 0 && neighborX < b[neighborY].size() &&
+                nearHexagon != nullptr &&
+                !nearHexagon->isCaptured()) {
+                return true;
+            }
+            for (auto & neighborFar : neighbors) {
+                int farNeighborX = neighborX + neighborFar[0];
+                int farNeighborY = neighborY + neighborFar[1];
+
+                Hexagon *farHexagon = b[farNeighborY][farNeighborX];
+
+                if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
+                    if (!farHexagon->isCaptured()) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }else{
+        std::array<int, 6> neighbors[] = {
+                {-1, 0},
+                {1, 1},
+                {0,  1},
+                {1,  0},
+                {-1,  -1},
+                {0,  -1}
+        };
+        for (auto & neighbor : neighbors) {
+            int neighborX = posX + neighbor[0];
+            int neighborY = posY + neighbor[1];
+
+            Hexagon *nearHexagon = b[neighborY][neighborX];
+
+            if (neighborY >= 0 && neighborY < b.size() && neighborX >= 0 && neighborX < b[neighborY].size() &&
+                nearHexagon != nullptr &&
+                !nearHexagon->isCaptured()) {
+                return true;
+            }
+
+            for (auto & neighborFar : neighbors) {
+                int farNeighborX = neighborX + neighborFar[0];
+                int farNeighborY = neighborY + neighborFar[1];
+
+                Hexagon *farHexagon = b[farNeighborY][farNeighborX];
+
+                if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
+                    if (!farHexagon->isCaptured()) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
 auto checkForResults() -> void {
-    int redHex, blueHex, totalHex;
+    int redHex = 0, blueHex = 0, totalHex = 0;
     for(auto hexTab : b){
         for(auto hx : hexTab){
             if(hx == nullptr) continue;
             totalHex++;
-            if(hx->getPlayer()) //false - blue, true - red
+            if(hx->getPlayer() && hx->isCaptured()) //false - blue, true - red
                 redHex++;
-            else
+            else if(!hx->getPlayer() && hx->isCaptured())
                 blueHex++;
         }
     }
-    if(true); // no red
-    if(true); // no blue
-    if(true); // someone is not able to move;
-    if(redHex + blueHex == totalHex){
-        while (true)
-            std::cout<<"WIIIIIIIIIIN\n";
+    std::cout<<"Total: " << totalHex << " redHex: " << redHex << " blueHex: " << blueHex << '\n';
+    for(auto hexTab : b){ //false - blue, true - red
+        for(auto hx : hexTab) {
+            if (hx == nullptr) continue;
+            if (hx->getPlayer() && hx->isCaptured()) {
+                if (!isPossibleToGo(hx)) {
+                    std::cout << "Red cannot move\n";
+                }
+            }
+        }
     }
-    //std::cout<<"Total: " << totalHex << " redHex: " << redHex << " blueHex: " << blueHex << '\n';
+    for(auto hexTab : b){ //false - blue, true - red
+        for(auto hx : hexTab){
+            if(hx == nullptr) continue;
+            if(!hx->getPlayer() && hx->isCaptured()){
+                if(!isPossibleToGo(hx)){
+                    std::cout<<"Blue cannot move\n";
+                }
+            }
+        }
+    }
+    if(redHex == 0 || blueHex == 0){
+       std::cout<<"Someone is fully eaten\n";
+    } // someone is not able to move;
+    if(redHex + blueHex == totalHex){
+        std::cout<<"All board is captured;";
+    }
+    std::cout<<"Total: " << totalHex << " redHex: " << redHex << " blueHex: " << blueHex << '\n';
+}
+
+
+auto pollHexagons(sf::Event event)->void{
+    for(const auto hexTab : b) {
+        for (const auto hx: hexTab) {
+            if (hx == nullptr) continue;
+            if (hx->checkForClick(event)) {
+                clearOtline();
+                if (!isPlacing) selectedHexagon = hx;
+                else placeHexagon(hx);
+            }
+        }
+    }
+}
+
+auto pollButtons(sf::Event event) ->void{
+    for(auto button : menuButtons){
+        if(button->checkForClick(event)){
+            std::string input = button->getText();
+            if(input == "New Game") inMenu = !inMenu;
+            else if(input == "Score") continue; // implement score!
+            else window.close();
+        }
+    }
 }
 
 auto pollEvents() -> void{
@@ -349,15 +554,8 @@ auto pollEvents() -> void{
     while (window.pollEvent(event)){
         if(event.type == sf::Event::Closed) window.close();
         if (event.type == sf::Event::MouseButtonPressed) {
-            for(const auto hexTab : b)
-                for (const auto hx: hexTab) {
-                    if(hx == nullptr) continue;
-                    if(hx->checkForClick(event)){
-                        clearOtline();
-                        if(!isPlacing) selectedHexagon = hx;
-                        else placeHexagon(hx);
-                    }
-                }
+            if(inMenu) pollButtons(event);
+            else pollHexagons(event);
         }
     }
 }
