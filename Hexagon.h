@@ -17,6 +17,7 @@ public:
 
     Hexagon(double rad, bool isVisible);
 
+
 //    Hexagon(float rad, int q, int r);
 //
 //
@@ -50,7 +51,13 @@ public:
 
     bool getPlayer() const;
 
+    bool getIsPredefined();
+
+    int getPredefinedPlayer();
+
 private:
+    int isPredefined = false;
+    bool predefinedPlayer;
     bool captured;
     bool secondRow = false;
     bool selected = false;

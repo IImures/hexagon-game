@@ -16,6 +16,8 @@ Hexagon::Hexagon(double rad) {
 }
 
 Hexagon::Hexagon(double rad, int playerNumber) {
+    isPredefined = true;
+    predefinedPlayer = playerNumber;
     radius = rad;
     player = playerNumber;
     captured = true;
@@ -138,6 +140,15 @@ void Hexagon::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(hexagon, states);
 
 }
+
+bool Hexagon::getIsPredefined() {
+    return isPredefined;
+}
+
+int Hexagon::getPredefinedPlayer() {
+    return predefinedPlayer;
+}
+
 
 //void Hexagon::draw(sf::RenderTarget &target, sf::RenderStates states) const {
 //    target.draw(hexagon);

@@ -76,6 +76,8 @@ auto pollButtons(sf::Event event) ->void;
 
 auto setUpText() -> void;
 
+auto endGame() ->void;
+
 int main() {
 
 
@@ -555,7 +557,10 @@ auto checkForResults() -> void {
             }
         }
     }
-    if(!isPossibleToMove) std::cout<<"Red cannot move\n";
+    if(!isPossibleToMove){
+        std::cout<<"Red cannot move\n";
+        endGame();
+    }
     for(auto hexTab : b){ //false - blue, true - red !!!!working
         for(auto hx : hexTab){
             if(hx == nullptr) continue;
@@ -567,14 +572,19 @@ auto checkForResults() -> void {
             }
         }
     }
-    if(!isPossibleToMove) std::cout<<"Blue cannot move\n"; // working
+    if(!isPossibleToMove){
+    std::cout<<"Blue cannot move\n";
+    endGame();
+    } // working
     if(redHex == 0 || blueHex == 0){
        std::cout<<"Someone is fully eaten\n";
+       endGame();
     } // someone is not able to move;
     if(redHex + blueHex == totalHex){
         std::cout<<"All board is captured;";
+        endGame();
     }
-    std::cout<<"Total: " << totalHex << " redHex: " << redHex << " blueHex: " << blueHex << '\n';
+    //std::cout<<"Total: " << totalHex << " redHex: " << redHex << " blueHex: " << blueHex << '\n';
 }
 
 
@@ -589,7 +599,7 @@ auto pollHexagons(sf::Event event)->void{
             }
         }
     }
-    if(returnButton->checkForClick(event)) inMenu = !inMenu;
+    if(returnButton->checkForClick(event)) endGame();
 }
 
 auto pollButtons(sf::Event event) ->void{
@@ -601,6 +611,24 @@ auto pollButtons(sf::Event event) ->void{
             else window.close();
         }
     }
+}
+
+auto endGame() -> void{
+    for(auto& hexTab : b){
+        for(auto& hx : hexTab){
+            if(hx == nullptr) continue;
+            if(hx->getIsPredefined())
+                hx = new Hexagon(HEX_SIZE, hx->getPredefinedPlayer());
+            else if(!hx->getIsVisible())
+                hx = new Hexagon(HEX_SIZE, false);
+            else hx = new Hexagon(HEX_SIZE);
+        }
+    }
+    selectedHexagon = nullptr;
+    usedHexagon = nullptr;
+    playerTurn = true;
+    isPlacing = false;
+    inMenu = !inMenu;
 }
 
 auto pollEvents() -> void{
