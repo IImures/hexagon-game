@@ -22,7 +22,15 @@ std::array<Button*, 3> menuButtons = {
         new Button(300,70,"Score"),
         new Button(300,70,"Exit")
 };
+
+sf::Font font;
+
 sf::Text title;
+
+sf::Text playerRedScore;
+sf::Text playerBlueScore;
+sf::Text totalSore;
+Button *returnButton = new Button(300,70,"Return");
 
 std::array<Hexagon*, 10> b0 = {nullptr, nullptr, nullptr, nullptr, new Hexagon(HEX_SIZE,1), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE, 0)};
 std::array<Hexagon*, 10> b1 = {nullptr, nullptr, nullptr, new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE), new Hexagon(HEX_SIZE)};
@@ -66,16 +74,12 @@ auto pollHexagons(sf::Event event)->void;
 
 auto pollButtons(sf::Event event) ->void;
 
+auto setUpText() -> void;
+
 int main() {
 
-    sf::Font font;
-    if(!font.loadFromFile("/Users/vladyslavkalinchenko/CLionProjects/PJC_PRO1/Assets/arial.ttf")){
-        std::cout<<"Failed to load title font\n";
-    }
-    title.setFont(font);
-    title.setCharacterSize(50);
-    title.setFillColor(sf::Color::White);
-    title.setString("Hexagon Game");
+
+    setUpText();
 
     while (window.isOpen()) {
         window.clear();
@@ -89,6 +93,32 @@ int main() {
 
         }
     return 0;
+}
+
+auto setUpText()->void{
+    if(!font.loadFromFile("/Users/vladyslavkalinchenko/CLionProjects/PJC_PRO1/Assets/arial.ttf")){
+        std::cout<<"Failed to load title font\n";
+    }
+    title.setFont(font);
+    title.setCharacterSize(50);
+    title.setFillColor(sf::Color::White);
+    title.setString("Hexagon Game");
+
+    playerRedScore.setFont(font);
+    playerRedScore.setCharacterSize(50);
+    playerRedScore.setFillColor(sf::Color::White);
+    playerRedScore.setString("Red hexagons: 0");
+
+    playerBlueScore.setFont(font);
+    playerBlueScore.setCharacterSize(50);
+    playerBlueScore.setFillColor(sf::Color::White);
+    playerBlueScore.setString("Blue hexagons: 0");
+
+    totalSore.setFont(font);
+    totalSore.setCharacterSize(50);
+    totalSore.setFillColor(sf::Color::White);
+    totalSore.setString("Total hexagons: 58");
+
 }
 
 auto drawAll() -> void {
@@ -129,6 +159,15 @@ auto drawGame() -> void {
         }
         y+=40;
     }
+
+    playerRedScore.setPosition(width/4.f + 600, height/4.f - 200);
+    playerBlueScore.setPosition(width/4.f + 600, height/4.f - 100);
+
+    window.draw(playerBlueScore);
+    window.draw(playerRedScore);
+
+    returnButton->setPosition(playerBlueScore.getPosition().x, height - returnButton->getHeight());
+    returnButton->draw(window);
 
     if(selectedHexagon != nullptr){
         auto vec = findPosition(selectedHexagon);
@@ -390,10 +429,10 @@ auto isPossibleToGo(Hexagon *hexagon) -> bool{
 
             Hexagon *nearHexagon = b[neighborY][neighborX];
 
-            if (neighborY >= 0 && neighborY < b.size() && neighborX >= 0 && neighborX < b[neighborY].size() &&
-                nearHexagon != nullptr &&
-                !nearHexagon->isCaptured()) {
-                return true;
+            if ((neighborY >= 0 && neighborY < b.size() && neighborX >= 0 && neighborX < b[neighborY].size() &&
+                nearHexagon != nullptr)) {
+                if(!nearHexagon->isCaptured())
+                    return true;
             }
 
             for (auto & neighborFar : neighbors) {
@@ -426,14 +465,17 @@ auto isPossibleToGo(Hexagon *hexagon) -> bool{
 
             Hexagon *nearHexagon = b[neighborY][neighborX];
 
-            if (neighborY >= 0 && neighborY < b.size() && neighborX >= 0 && neighborX < b[neighborY].size() &&
-                nearHexagon != nullptr &&
-                !nearHexagon->isCaptured()) {
-                return true;
+            if ((neighborY >= 0 && neighborY < b.size() && neighborX >= 0 && neighborX < b[neighborY].size() &&
+                 nearHexagon != nullptr)) {
+                if(!nearHexagon->isCaptured())
+                    return true;
             }
+
             for (auto & neighborFar : neighbors) {
                 int farNeighborX = neighborX + neighborFar[0];
                 int farNeighborY = neighborY + neighborFar[1];
+
+                //std::cout<< farNeighborY << " " << farNeighborX << '\n';
 
                 Hexagon *farHexagon = b[farNeighborY][farNeighborX];
 
@@ -459,15 +501,17 @@ auto isPossibleToGo(Hexagon *hexagon) -> bool{
 
             Hexagon *nearHexagon = b[neighborY][neighborX];
 
-            if (neighborY >= 0 && neighborY < b.size() && neighborX >= 0 && neighborX < b[neighborY].size() &&
-                nearHexagon != nullptr &&
-                !nearHexagon->isCaptured()) {
-                return true;
+            if ((neighborY >= 0 && neighborY < b.size() && neighborX >= 0 && neighborX < b[neighborY].size() &&
+                 nearHexagon != nullptr)) {
+                if(!nearHexagon->isCaptured())
+                    return true;
             }
 
             for (auto & neighborFar : neighbors) {
                 int farNeighborX = neighborX + neighborFar[0];
                 int farNeighborY = neighborY + neighborFar[1];
+
+                //std::cout<< farNeighborY << " " << farNeighborX << '\n';
 
                 Hexagon *farHexagon = b[farNeighborY][farNeighborX];
 
@@ -483,38 +527,47 @@ auto isPossibleToGo(Hexagon *hexagon) -> bool{
 }
 
 auto checkForResults() -> void {
-    int redHex = 0, blueHex = 0, totalHex = 0;
+    int redHex = 0, blueHex = 0, totalHex = 58;
     for(auto hexTab : b){
         for(auto hx : hexTab){
             if(hx == nullptr) continue;
-            totalHex++;
             if(hx->getPlayer() && hx->isCaptured()) //false - blue, true - red
                 redHex++;
             else if(!hx->getPlayer() && hx->isCaptured())
                 blueHex++;
         }
     }
+    auto semiPos = playerBlueScore.getString().find(":");
+    playerBlueScore.setString(playerBlueScore.getString().substring(0,semiPos + 1) + " " +  std::to_string(blueHex));
+    semiPos = playerRedScore.getString().find(":");
+    playerRedScore.setString(playerRedScore.getString().substring(0,semiPos + 1) + " " +  std::to_string(redHex));
+
     std::cout<<"Total: " << totalHex << " redHex: " << redHex << " blueHex: " << blueHex << '\n';
-    for(auto hexTab : b){ //false - blue, true - red
+    bool isPossibleToMove = false;
+    for(auto hexTab : b){ //false - blue, true - red //not working
         for(auto hx : hexTab) {
             if (hx == nullptr) continue;
             if (hx->getPlayer() && hx->isCaptured()) {
-                if (!isPossibleToGo(hx)) {
-                    std::cout << "Red cannot move\n";
-                }
+                if (isPossibleToGo(hx))
+                    isPossibleToMove = true;
+                else
+                    isPossibleToMove = false;
             }
         }
     }
-    for(auto hexTab : b){ //false - blue, true - red
+    if(!isPossibleToMove) std::cout<<"Red cannot move\n";
+    for(auto hexTab : b){ //false - blue, true - red !!!!working
         for(auto hx : hexTab){
             if(hx == nullptr) continue;
             if(!hx->getPlayer() && hx->isCaptured()){
-                if(!isPossibleToGo(hx)){
-                    std::cout<<"Blue cannot move\n";
-                }
+                if(isPossibleToGo(hx))
+                    isPossibleToMove = true;
+                else
+                    isPossibleToMove = false;
             }
         }
     }
+    if(!isPossibleToMove) std::cout<<"Blue cannot move\n"; // working
     if(redHex == 0 || blueHex == 0){
        std::cout<<"Someone is fully eaten\n";
     } // someone is not able to move;
@@ -536,6 +589,7 @@ auto pollHexagons(sf::Event event)->void{
             }
         }
     }
+    if(returnButton->checkForClick(event)) inMenu = !inMenu;
 }
 
 auto pollButtons(sf::Event event) ->void{
