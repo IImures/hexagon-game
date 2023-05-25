@@ -4,7 +4,7 @@ project(PJC_PRO1)
 set(CMAKE_CXX_STANDARD 23)
 set(BUILD_SHARED_LIBS FALSE)#!!
 
-add_executable(PJC_PRO1 main.cpp Hexagon.h Hexagon.cpp Button.cpp)
+add_executable(PJC_PRO1 main.cpp Hexagon.h Hexagon.cpp Button.cpp ScoreWriter.h ScoreWriter.cpp Computer.cpp Computer.h GameBoard.h GameBoard.cpp )
 
 include_directories(/usr/local/include)
 
