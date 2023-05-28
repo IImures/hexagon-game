@@ -454,10 +454,11 @@ auto GameBoard::isPossibleToGo(Hexagon *hexagon) -> bool{
 auto GameBoard::checkForResults() -> void {
     redHex = 0;
     blueHex = 0;
-    totalHex = 58;
+    totalHex = 0;
     for(auto hexTab : b){
         for(auto hx : hexTab){
             if(hx == nullptr) continue;
+            totalHex++;
             if(hx->getPlayer() && hx->isCaptured()) //false - blue, true - red
                 redHex++;
             else if(!hx->getPlayer() && hx->isCaptured())
@@ -474,7 +475,7 @@ auto GameBoard::checkForResults() -> void {
     for(auto hexTab : b){ //false - blue, true - red //not working
         for(auto hx : hexTab) {
             if (hx == nullptr) continue;
-            if (hx->getPlayer() && hx->isCaptured()) {
+            if (hx->isCaptured() && hx->getPlayer()) {
                 if (isPossibleToGo(hx)){
                     isPossibleToMove = true;
                     break;
@@ -492,7 +493,7 @@ auto GameBoard::checkForResults() -> void {
     for(auto hexTab : b){ //false - blue, true - red !!!!working
         for(auto hx : hexTab){
             if(hx == nullptr) continue;
-            if(!hx->getPlayer() && hx->isCaptured()){
+            if(hx->isCaptured() && !hx->getPlayer() ){
                 if(isPossibleToGo(hx)) {
                     isPossibleToMove = true;
                     break;
@@ -566,6 +567,7 @@ auto GameBoard::pcGo() ->void{
             }
         }
     }
+
     std::vector<std::map<std::array<int,2>, std::array<int,3>>> maxEnemy;
     for(auto hexagon : hexagonVec){
         maxEnemy.push_back(calculateMoveNear(hexagon));
@@ -573,6 +575,7 @@ auto GameBoard::pcGo() ->void{
     }
 
     sf::Vector2f origin = chooseRandomMove(maxEnemy);
+    while (usedHexagon->isCaptured()) origin = chooseRandomMove(maxEnemy);
 
     usedHexagon->hexagon.setOutlineColor(sf::Color::Red);
     if(usedHexagon->isSelected()) {
@@ -584,16 +587,6 @@ auto GameBoard::pcGo() ->void{
         checkForNeighbors(usedHexagon);
     }
 
-
-    for(auto hexTab : b) {
-        for (auto hx: hexTab) {
-            if (hx == nullptr) continue;
-            else {
-                hx->setSecondRow(false); // maybe place it into clearOutlinefunc
-                hx->select(false);
-            }
-        }
-    }
     playerTurn = !playerTurn;
 }
 
@@ -614,7 +607,7 @@ auto GameBoard::chooseRandomMove(std::vector<std::map<std::array<int,2>, std::ar
         for(auto entry : map){
             sf::Vector2f key = sf::Vector2f(entry.first[0], entry.first[1]);
             int secondElement = entry.second[2];
-            if (secondElement > maxEnemies) {
+            if (secondElement >= maxEnemies) {
                 maxEnemies = secondElement;
                 target = key;
                 originX = entry.second[0];
@@ -651,25 +644,24 @@ auto GameBoard::calculateMoveFar(Hexagon *hexagon) -> std::map<std::array<int,2>
                 if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
                     if (!farHexagon->isCaptured()) {
                         farHexagon->setSecondRow(true);
-                    }
-                }
+                        for(auto & farTarget : neighbors){
+                            int farEnemyX = farNeighborX + farTarget[0];
+                            int farEnemyY = farNeighborY + farTarget[1];
 
-                for(auto & farTarget : neighbors){
-                    int farEnemyX = farNeighborX + farTarget[0];
-                    int farEnemyY = farNeighborY + farTarget[1];
+                            Hexagon* farHex = b[farEnemyY][farEnemyX];
 
-                    Hexagon* farHex = b[farEnemyY][farEnemyX];
-
-                    if (farEnemyY >= 0 && farEnemyY < b.size() && farEnemyX >= 0 && farEnemyX < b[farEnemyY].size() && b[farEnemyY][farEnemyX] != nullptr) {
-                        if (farHex->isCaptured() && farEnemy++) {
-                            farEnemy++;
+                            if (farEnemyY >= 0 && farEnemyY < b.size() && farEnemyX >= 0 && farEnemyX < b[farEnemyY].size() && b[farEnemyY][farEnemyX] != nullptr) {
+                                if (farHex->isCaptured() && farHexagon->getPlayer()) {
+                                    farEnemy++;
+                                }
+                            }
                         }
+                        std::array<int, 2> key ={farNeighborX, farNeighborY};
+                        std::array<int, 3> val = {posX, posY, farEnemy};
+                        positions[key] = val;
+                        farEnemy = 0;
                     }
                 }
-                std::array<int, 2> key ={farNeighborX, farNeighborY};
-                std::array<int, 3> val = {posX, posY, farEnemy};
-                positions[key] = val;
-                farEnemy = 0;
             }
         }
         return positions;
@@ -696,25 +688,24 @@ auto GameBoard::calculateMoveFar(Hexagon *hexagon) -> std::map<std::array<int,2>
                 if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
                     if (!farHexagon->isCaptured()) {
                         farHexagon->setSecondRow(true);
-                    }
-                }
+                        for(auto & farTarget : neighbors){
+                            int farEnemyX = farNeighborX + farTarget[0];
+                            int farEnemyY = farNeighborY + farTarget[1];
 
-                for(auto & farTarget : neighbors){
-                    int farEnemyX = farNeighborX + farTarget[0];
-                    int farEnemyY = farNeighborY + farTarget[1];
+                            Hexagon* farHex = b[farEnemyY][farEnemyX];
 
-                    Hexagon* farHex = b[farEnemyY][farEnemyX];
-
-                    if (farEnemyY >= 0 && farEnemyY < b.size() && farEnemyX >= 0 && farEnemyX < b[farEnemyY].size() && b[farEnemyY][farEnemyX] != nullptr) {
-                        if (farHex->isCaptured() && farEnemy++) {
-                            farEnemy++;
+                            if (farEnemyY >= 0 && farEnemyY < b.size() && farEnemyX >= 0 && farEnemyX < b[farEnemyY].size() && b[farEnemyY][farEnemyX] != nullptr) {
+                                if (farHex->isCaptured() && farHexagon->getPlayer()) {
+                                    farEnemy++;
+                                }
+                            }
                         }
+                        std::array<int, 2> key ={farNeighborX, farNeighborY};
+                        std::array<int, 3> val = {posX, posY, farEnemy};
+                        positions[key] = val;
+                        farEnemy = 0;
                     }
                 }
-                std::array<int, 2> key ={farNeighborX, farNeighborY};
-                std::array<int, 3> val = {posX, posY, farEnemy};
-                positions[key] = val;
-                farEnemy = 0;
             }
         }
         return positions;
@@ -743,25 +734,24 @@ auto GameBoard::calculateMoveFar(Hexagon *hexagon) -> std::map<std::array<int,2>
                 if (farNeighborY >= 0 && farNeighborY < b.size() && farNeighborX >= 0 && farNeighborX < b[farNeighborY].size() && b[farNeighborY][farNeighborX] != nullptr) {
                     if (!farHexagon->isCaptured()) {
                         farHexagon->setSecondRow(true);
-                    }
-                }
+                        for(auto & farTarget : neighbors){
+                            int farEnemyX = farNeighborX + farTarget[0];
+                            int farEnemyY = farNeighborY + farTarget[1];
 
-                for(auto & farTarget : neighbors){
-                    int farEnemyX = farNeighborX + farTarget[0];
-                    int farEnemyY = farNeighborY + farTarget[1];
+                            Hexagon* farHex = b[farEnemyY][farEnemyX];
 
-                    Hexagon* farHex = b[farEnemyY][farEnemyX];
-
-                    if (farEnemyY >= 0 && farEnemyY < b.size() && farEnemyX >= 0 && farEnemyX < b[farEnemyY].size() && b[farEnemyY][farEnemyX] != nullptr) {
-                        if (farHex->isCaptured() && farEnemy++) {
-                            farEnemy++;
+                            if (farEnemyY >= 0 && farEnemyY < b.size() && farEnemyX >= 0 && farEnemyX < b[farEnemyY].size() && b[farEnemyY][farEnemyX] != nullptr) {
+                                if (farHex->isCaptured() && farHexagon->getPlayer()) {
+                                    farEnemy++;
+                                }
+                            }
                         }
+                        std::array<int, 2> key ={farNeighborX, farNeighborY};
+                        std::array<int, 3> val = {posX, posY, farEnemy};
+                        positions[key] = val;
+                        farEnemy = 0;
                     }
                 }
-                std::array<int, 2> key ={farNeighborX, farNeighborY};
-                std::array<int, 3> val = {posX, posY, farEnemy};
-                positions[key] = val;
-                farEnemy = 0;
             }
         }
         return positions;
@@ -809,7 +799,7 @@ auto GameBoard::calculateMoveNear(Hexagon* hexagon)->std::map<std::array<int,2>,
                     }
                 }
                 std::array<int, 2> key ={neighborX, neighborY};
-                std::array<int, 3> val ={posY, posX, nearEnemy};
+                std::array<int, 3> val ={posX, posY, nearEnemy};
                 positions[key] = val;
                 nearEnemy = 0;
             }
@@ -835,7 +825,7 @@ auto GameBoard::calculateMoveNear(Hexagon* hexagon)->std::map<std::array<int,2>,
                 nearHexagon != nullptr &&
                 !nearHexagon->isCaptured()) {
 
-                hexagon->select(true);
+                nearHexagon->select(true);
 
                 for (auto & neighborFar : neighbors) {
                     int farNeighborX = neighborX + neighborFar[0];
@@ -850,7 +840,7 @@ auto GameBoard::calculateMoveNear(Hexagon* hexagon)->std::map<std::array<int,2>,
                     }
                 }
                 std::array<int, 2> key ={neighborX, neighborY};
-                std::array<int, 3> val ={posY, posX, nearEnemy};
+                std::array<int, 3> val ={posX, posY, nearEnemy};
                 positions[key] = val;
                 nearEnemy = 0;
             }
@@ -876,7 +866,7 @@ auto GameBoard::calculateMoveNear(Hexagon* hexagon)->std::map<std::array<int,2>,
                 nearHexagon != nullptr &&
                 !nearHexagon->isCaptured()) {
 
-                hexagon->select(true);
+                nearHexagon->select(true);
 
                 for (auto & neighborFar : neighbors) {
                     int farNeighborX = neighborX + neighborFar[0];
@@ -891,7 +881,7 @@ auto GameBoard::calculateMoveNear(Hexagon* hexagon)->std::map<std::array<int,2>,
                     }
                 }
                 std::array<int, 2> key ={neighborX, neighborY};
-                std::array<int, 3> val ={posY, posX, nearEnemy};
+                std::array<int, 3> val ={posX, posY, nearEnemy};
                 positions[key] = val;
                 nearEnemy = 0;
             }
