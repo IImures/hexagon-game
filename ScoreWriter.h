@@ -10,7 +10,7 @@
 
 class ScoreWriter {
 public:
-    ScoreWriter(int redHex, int blueHex, int winner);
+    ScoreWriter(int redHex, int blueHex, bool winner);
 
     ScoreWriter();
 
@@ -25,7 +25,7 @@ private:
 
     int redHex;
     int blueHex;
-    int winner;
+    bool winner;
 };
 
 
