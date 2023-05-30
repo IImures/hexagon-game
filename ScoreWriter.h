@@ -10,12 +10,27 @@
 
 class ScoreWriter {
 public:
-    ScoreWriter(int redHex, int blueHex, bool winner);
+    /**
+     * Constructor used when writing info to ScoreBoard
+     * @param redHex
+     * @param blueHex
+     * @param winner
+     */
+    ScoreWriter(int redHex, int blueHex, int winner);
 
+    /**
+     * Constructor used to read from ScoreBoard
+     */
     ScoreWriter();
+
+    ~ScoreWriter();
 
     void read();
 
+    /**
+     * Returns score list in set
+     * @return std::set<std::array<int,3>> score;
+     */
     std::vector<std::string> getScoreList();
 
     void write();
@@ -25,7 +40,7 @@ private:
 
     int redHex;
     int blueHex;
-    bool winner;
+    int winner;
 };
 
 

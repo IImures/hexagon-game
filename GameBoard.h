@@ -7,7 +7,6 @@
 
 #include "Hexagon.h"
 #include "Button.h"
-#include "Computer.h"
 #include <SFML/Graphics.hpp>
 
 
@@ -20,7 +19,9 @@ public:
      * @param window
      * @param inMenu
      */
-    GameBoard(int width, int height, sf::RenderWindow *window, bool &inMenu);
+    GameBoard(int width, int height, sf::RenderWindow *window, bool *inMenu);
+
+    ~GameBoard();
 
     /**
      * Turning on a computer
@@ -131,9 +132,9 @@ private:
     int redHex = 0;
     int blueHex = 0;
     int totalHex = 58;
-    int winner = 0;
+    int winner = 3; // 1 - red 0 - blue 3 - none
 
-    bool &inMenu;
+    bool *inMenu;
 
     sf::Font font;
     sf::Text playerRedScore;

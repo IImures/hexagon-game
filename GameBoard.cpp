@@ -10,7 +10,8 @@
 const int width = 1920;
 const int height = 1080;
 
-GameBoard::GameBoard(int width, int height, sf::RenderWindow *window, bool &inMenu) : inMenu(inMenu) {
+GameBoard::GameBoard(int width, int height, sf::RenderWindow *window, bool *inMenu) {
+    this->inMenu = inMenu;
     this->width=width;
     this->height=height;
     this->window = window;
@@ -51,8 +52,7 @@ auto GameBoard::drawGame() -> void {
                 continue;
             }
             hx->setPosition(width/4.f + x, height/4.f +  y);
-            //window.draw(hx);
-            hx->draw(*window);
+            window->draw(*hx);
             x+=50;
         }
         y+=40;
@@ -65,7 +65,7 @@ auto GameBoard::drawGame() -> void {
     window->draw(playerRedScore);
 
     returnButton->setPosition(playerBlueScore.getPosition().x, height - returnButton->getHeight());
-    returnButton->draw(*window);
+    window->draw(*returnButton);
 
     if(selectedHexagon != nullptr){
         auto vec = findPosition(selectedHexagon);
@@ -88,7 +88,6 @@ auto GameBoard::findPosition(Hexagon *target) -> sf::Vector2f {
             }
         }
     }
-    std::cout<<"wha\n";
 }
 
 auto GameBoard::drawOutline(int posX, int posY)->void {
@@ -444,13 +443,12 @@ auto GameBoard::checkForResults() -> void {
     playerRedScore.setString(playerRedScore.getString().substring(0,semiPos + 1) + " " +  std::to_string(redHex));
 
     if(redHex == 0 || blueHex == 0) {
-        if (redHex == 0) winner = false;
-        if (blueHex == 0) winner = true;
+        if (redHex == 0) winner = 0;
+        if (blueHex == 0) winner = 1;
         std::cout << "Someone is fully eaten\n";
         endGame();
     }
 
-    //std::cout<<"Total: " << totalHex << " redHex: " << redHex << " blueHex: " << blueHex << '\n';
     bool isPossibleToMove = false;
     for(auto hexTab : b){ //false - blue, true - red //not working
         for(auto hx : hexTab) {
@@ -466,7 +464,7 @@ auto GameBoard::checkForResults() -> void {
         }
     }
     if(!isPossibleToMove){
-        winner = false;
+        winner = 0;
         std::cout<<"Red cannot move\n";
         endGame();
     }
@@ -485,17 +483,16 @@ auto GameBoard::checkForResults() -> void {
     }
     if(!isPossibleToMove){
         std::cout<<"Blue cannot move\n";
-        winner = true;
+        winner = 1;
         endGame();
     } // working
 
     if(redHex + blueHex == totalHex){
         std::cout<<"All board is captured;";
-        if(redHex > blueHex) winner = true;
-        else winner = false;
+        if(redHex > blueHex) winner = 1;
+        else winner = 0;
         endGame();
     }
-    //std::cout<<"Total: " << totalHex << " redHex: " << redHex << " blueHex: " << blueHex << '\n';
 }
 
 auto GameBoard::pollHexagons(sf::Event event)->void{
@@ -531,7 +528,7 @@ auto GameBoard::endGame() -> void{
     playerTurn = true;
     pcPlay = false;
     isPlacing = false;
-    inMenu = true;
+    *inMenu = true;
 }
 
 auto GameBoard::pcGo() ->void{
@@ -875,4 +872,9 @@ auto GameBoard::calculateMoveNear(Hexagon* hexagon)->std::map<std::array<int,2>,
         }
         return positions;
     }
+}
+
+GameBoard::~GameBoard() {
+ delete usedHexagon;
+ delete selectedHexagon;
 }

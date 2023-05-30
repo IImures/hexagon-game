@@ -8,14 +8,14 @@
 #include <SFML/Graphics.hpp>
 
 
-class Button{
+class Button : public sf::Drawable{
 public:
 
     Button(int wigth, int heigt, std::string text);
 
     void setPosition(float x, float y);
 
-    void draw(sf::RenderWindow& window) const;
+    //void draw(sf::RenderWindow& window) const;
 
     int getWight();
 
@@ -28,11 +28,16 @@ public:
     std::string getText();
 
 private:
+
+    virtual void draw(sf::RenderTarget& target,sf::RenderStates states)const;
+
+
     int wigth;
     int heigt;
     sf::Font font;
     sf::Text text;
     sf::RectangleShape button;
+
 
 };
 

@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 
-ScoreWriter::ScoreWriter(int redHex, int blueHex, bool winner){
+ScoreWriter::ScoreWriter(int redHex, int blueHex, int winner){
     this->redHex = redHex;
     this->blueHex = blueHex;
     this->winner = winner;
@@ -40,7 +40,8 @@ void ScoreWriter::read() {
         std::string winner = tmp.substr(winnerIndex + 8);
         int winnerNum;
         if (winner == "Blue") winnerNum = 0;
-        else winnerNum = 1;
+        else if (winner == "Red")winnerNum = 1;
+        else winnerNum = 3;
         std::array<int, 3> tmpArr = {blueTmp, redTmp, winnerNum};
         tmpSet.insert(tmpArr);
     }
@@ -67,7 +68,8 @@ void ScoreWriter::write() {
     for(auto scoreTab : score){
         std::string winnerStr;
         if(scoreTab[2] == 0) winnerStr ="Blue";
-        else winnerStr = "Red";
+        else if (scoreTab[2] == 1 ) winnerStr = "Red";
+        else winnerStr = "None";
         file << "Blue hexagons: " << scoreTab[0] << ", Red hexagons: " << scoreTab[1] << ", Winner: " << winnerStr << '\n';
     }
     file.close();
@@ -87,6 +89,10 @@ std::vector<std::string> ScoreWriter::getScoreList() {
     while (getline(file, tmp))
         scoreList.push_back(tmp);
     return scoreList;
+}
+
+ScoreWriter::~ScoreWriter() {
+
 }
 
 

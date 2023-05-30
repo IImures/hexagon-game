@@ -27,9 +27,14 @@ void Button::setPosition(float x, float y) {
 }
 
 
-void Button::draw(sf::RenderWindow &window) const {
-    window.draw(button);
-    window.draw(text);
+//void Button::draw(sf::RenderWindow &window) const {
+//    window.draw(button);
+//    window.draw(text);
+//}
+
+void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const {
+    target.draw(button, states);
+    target.draw(text, states);
 }
 
 int Button::getWight() {
@@ -49,7 +54,6 @@ bool Button::checkForClick(sf::Event event) {
          event.mouseButton.x <= (button.getPosition().x + button.getSize().x)) &&
         (event.mouseButton.y >= button.getPosition().y &&
          event.mouseButton.y <= (button.getPosition().y + button.getSize().y))) {
-        button.setFillColor(sf::Color(rand() % 255,rand() % 255,rand() % 255));
         return true;
     }
 }

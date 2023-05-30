@@ -7,7 +7,7 @@
 #include <SFML/Graphics.hpp>
 
 
-class Hexagon : sf::Drawable {
+class Hexagon : public sf::Drawable {
 public:
     sf::CircleShape hexagon;
 
@@ -18,13 +18,6 @@ public:
     Hexagon(double rad, bool isVisible);
 
 
-//    Hexagon(float rad, int q, int r);
-//
-//
-//    float getRotation();
-//
-//    void setRotaion(float val);
-
     void setPosition(float x, float y);
 
     sf::Vector2f getPosition();
@@ -32,8 +25,6 @@ public:
     bool checkForClick(sf::Event event);
 
     bool getIsVisible();
-//    void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-    void draw(sf::RenderWindow& window) const;
 
     bool isCaptured() const;
 
@@ -56,6 +47,9 @@ public:
     int getPredefinedPlayer();
 
 private:
+
+    virtual void draw(sf::RenderTarget& target,sf::RenderStates states) const;
+
     int isPredefined = false;
     bool predefinedPlayer;
     bool captured;
@@ -63,15 +57,9 @@ private:
     bool selected = false;
     bool player;
     bool isVisible = true;
-    float rotation;
     float radius;
-    int q; // Column coordinate
-    int r; // Row coordinate
-    sf::Vector2f position;
 
-//    void calculatePosition();
 
-    virtual void draw(sf::RenderTarget& target,sf::RenderStates states) const;
 };
 
 
