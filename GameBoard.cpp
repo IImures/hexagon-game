@@ -5,7 +5,6 @@
 #include "GameBoard.h"
 #include <iostream>
 #include <cstdlib>
-#include <unistd.h>
 #include "ScoreWriter.h"
 
 const int width = 1920;
@@ -71,13 +70,8 @@ auto GameBoard::drawGame() -> void {
     if(selectedHexagon != nullptr){
         auto vec = findPosition(selectedHexagon);
         if(playerTurn == b[vec.y][vec.x]->getPlayer() && b[vec.y][vec.x]->isCaptured()) drawOutline(vec.x, vec.y);
-//        else if (playerTurn == b[vec.y][vec.x]->getPlayer()&& b[vec.y][vec.x]->isCaptured() ) drawOutline(vec.x, vec.y);
         usedHexagon = selectedHexagon;
-        //selectedHexagon = nullptr;
     }
-//    else if(selectedHexagon != nullptr && pcPlay){
-//        auto vec = findPosition(selectedHexagon);
-//    }
 }
 
 auto GameBoard::findPosition(Hexagon *target) -> sf::Vector2f {
@@ -238,6 +232,7 @@ auto GameBoard::placeHexagon(Hexagon *hex)->void{
         }
     }
     else clearOtline();
+
     for(auto hexTab : b) {
         for (auto hx: hexTab) {
             if (hx == nullptr) continue;
@@ -502,7 +497,6 @@ auto GameBoard::checkForResults() -> void {
     }
     //std::cout<<"Total: " << totalHex << " redHex: " << redHex << " blueHex: " << blueHex << '\n';
 }
-
 
 auto GameBoard::pollHexagons(sf::Event event)->void{
     for(const auto hexTab : b) {
@@ -882,11 +876,3 @@ auto GameBoard::calculateMoveNear(Hexagon* hexagon)->std::map<std::array<int,2>,
         return positions;
     }
 }
-
-
-//void GameBoard::setPc(Computer computer) {
-//    pc = computer;
-//}
-
-
-

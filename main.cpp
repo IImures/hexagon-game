@@ -6,6 +6,7 @@
 #include "ScoreWriter.h"
 #include "Computer.h"
 #include "GameBoard.h"
+#include "Menu.h"
 
 #include <SFML/Graphics.hpp>
 

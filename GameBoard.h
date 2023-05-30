@@ -13,46 +13,108 @@
 
 class GameBoard {
 public:
-
+    /**
+     * Constructor of a gameBoard where game is played
+     * @param width
+     * @param height
+     * @param window
+     * @param inMenu
+     */
     GameBoard(int width, int height, sf::RenderWindow *window, bool &inMenu);
 
+    /**
+     * Turning on a computer
+     * @param isPlay
+     */
     auto setPcPlay(bool isPlay) -> void;
-
-    //void setPc(Computer computer);
-
+    /**
+     * Function where every element of a game is drawn
+     */
     auto drawGame() ->void;
 
-    auto drawOutline(int posX, int posY) ->void;
-
-    auto findPosition(Hexagon *target) ->sf::Vector2f;
-
-    auto clearOtline()->void;
-
-    auto placeHexagon(Hexagon *hexagon)->void;
-
-    auto checkForNeighbors(Hexagon* hex) ->void;
-
-    auto checkForResults() -> void;
-
-    auto isPossibleToGo(Hexagon *hexagon) -> bool;
-
+    /**
+     * Function used to check if hexagon was clicked,
+     * It detects when hexagon was selected and when player making a move
+     * @param event
+     */
     auto pollHexagons(sf::Event event)->void;
 
-    auto endGame() ->void;
-
-
-
-
-
-    //auto getBoard();
+    /**
+     * Function is used for calculating results of a game, it can end a game if
+     * some conditions are true
+     */
+    auto checkForResults() -> void;
 
 private:
+    /**
+ * Function is called when hexagon is clicked and it is drawing an outline for possible move
+     * @param posX
+     * @param posY
+     */
+    auto drawOutline(int posX, int posY) ->void;
+
+    /**
+     * Function is used to find a position of hexagon in 2D array
+     * @param target
+     * @return sf::Vector2f
+     */
+    auto findPosition(Hexagon *target) ->sf::Vector2f;
+
+    /**
+     * Called after when move of hexagon was done
+     */
+    auto clearOtline()->void;
+
+    /**
+     * Called when player is moving on other hexagon
+     * @param hex hexagon which was clicked for move
+     */
+    auto placeHexagon(Hexagon *hexagon)->void;
+
+    /**
+     * Used to capture enemy's hexagons if the are near
+     * @param hex
+     */
+    auto checkForNeighbors(Hexagon* hex) ->void;
+
+    /**
+     * Is checking if move is posible, used by checkForResults()
+     * @param hexagon
+     * @return true or false
+     */
+    auto isPossibleToGo(Hexagon *hexagon) -> bool;
+
+    /**
+     * Function called by function checkForResults() or pressing button return
+     * It clears a game field and writing a score to a file
+     */
+    auto endGame() ->void;
+
+    /**
+     * Function is called when a player playing against a computer
+     * It is used to calculate the best move for the computer
+     */
     auto pcGo() ->void;
 
+    /**
+     * Function is used by pcGo() it is used to find the move which will capture the most amount of enemy
+     * @param maxEnemy vector of map where key is position of a computer hexagon a value is position of targeted hexagon and enemies around it
+     * @return sf::Vector2f originX, originY
+     */
     auto chooseRandomMove(std::vector<std::map<std::array<int,2>, std::array<int,3>>> maxEnemy)->sf::Vector2f;
 
+    /**
+     * Function is searching for an enemy which two hexagons far
+     * @param hexagon
+     * @return
+     */
     auto calculateMoveFar(Hexagon* hexagon)->std::map<std::array<int,2>, std::array<int,3>>;
 
+    /**
+ *  * Function is searching for an enemy which one hexagons far
+     * @param hexagon
+     * @return
+     */
     auto calculateMoveNear(Hexagon* hexagon)->std::map<std::array<int,2>, std::array<int,3>>;
     sf::RenderWindow *window;
 
@@ -72,7 +134,6 @@ private:
     int winner = 0;
 
     bool &inMenu;
-    //Computer pc;
 
     sf::Font font;
     sf::Text playerRedScore;
