@@ -34,7 +34,6 @@ auto Menu::drawMenu(sf::RenderWindow &window) -> void {
     int y = 0;
     for(auto button : menuButtons){
         button->setPosition(width/2 - (button->getWight()/2), (height / 2 - button->getHeight()) + y);
-        //button->draw(window);
         window.draw(*button);
         y+=100;
     }

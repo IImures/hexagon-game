@@ -33,7 +33,6 @@ auto ScoreMenu::drawScoreMenu() -> void {
         scoreText.setString(text);
         sf::FloatRect textBounds = scoreText.getLocalBounds();
         scoreText.setPosition(x - textBounds.width/4, y - textBounds.height + yOffset);
-        //scoreText.setPosition(x, y + yOffset);
         yOffset+= 60;
         window->draw(scoreText);
     }

@@ -15,14 +15,15 @@ public:
 
     void setPosition(float x, float y);
 
-    //void draw(sf::RenderWindow& window) const;
-
     int getWight();
 
     int getHeight();
 
-    sf::Vector2f getPosition();
-
+    /**
+     * Used to check if button was clicked
+     * @param event
+     * @return
+     */
     bool checkForClick(sf::Event event);
 
     std::string getText();

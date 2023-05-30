@@ -27,11 +27,6 @@ void Button::setPosition(float x, float y) {
 }
 
 
-//void Button::draw(sf::RenderWindow &window) const {
-//    window.draw(button);
-//    window.draw(text);
-//}
-
 void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(button, states);
     target.draw(text, states);
@@ -43,10 +38,6 @@ int Button::getWight() {
 
 int Button::getHeight() {
     return heigt;
-}
-
-sf::Vector2f Button::getPosition() {
-    return button.getPosition();
 }
 
 bool Button::checkForClick(sf::Event event) {
