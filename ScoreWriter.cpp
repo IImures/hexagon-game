@@ -70,7 +70,7 @@ void ScoreWriter::write() {
         if(scoreTab[2] == 0) winnerStr ="Blue";
         else if (scoreTab[2] == 1 ) winnerStr = "Red";
         else winnerStr = "None";
-        file << "Blue hexagons: " << scoreTab[0] << ", Red hexagons: " << scoreTab[1] << ", Winner: " << winnerStr << '\n';
+        file << "Blue hexagons: " << scoreTab[1] << ", Red hexagons: " << scoreTab[0] << ", Winner: " << winnerStr << '\n';
     }
     file.close();
 }

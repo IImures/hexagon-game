@@ -1,2 +1,0 @@
-Blue hexagons: 3, Red hexagons: 3, Winner: None
-Blue hexagons: 3, Red hexagons: 6, Winner: None

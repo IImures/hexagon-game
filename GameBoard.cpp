@@ -208,7 +208,7 @@ auto GameBoard::clearOtline()->void{
     for(auto hexTab : b){
         for(auto hx : hexTab) {
             if(hx == nullptr) continue;
-            hx->hexagon.setOutlineColor(sf::Color::Black);
+            hx->hexagon.setOutlineColor(sf::Color(0,0,0));
         }
     }
 }

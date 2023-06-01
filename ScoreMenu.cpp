@@ -36,6 +36,7 @@ auto ScoreMenu::drawScoreMenu() -> void {
         yOffset+= 60;
         window->draw(scoreText);
     }
+    if(scoreText.getPosition().x == 0) scoreText.setPosition(x,y);
     returnButton->setPosition(scoreText.getPosition().x, scoreText.getPosition().y + yOffset);
     window->draw(*returnButton);
 
