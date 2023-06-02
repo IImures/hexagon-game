@@ -24,14 +24,14 @@ void ScoreWriter::read() {
     while(getline(file, tmp)) {
         std::string target = "Blue hexagons: ";
         auto blueIndex = tmp.find(target);
-        auto commaIndex = tmp.find(",", blueIndex);
+        auto commaIndex = tmp.find(',', blueIndex);
         std::string blueHexagons = tmp.substr(blueIndex + target.length(), commaIndex - (blueIndex + target.length()));
         int blueTmp = std::stoi(blueHexagons);
         //std::cout << blueTmp << '\n';
 
         target = "Red hexagons: ";
         auto redIndex = tmp.find(target);
-        commaIndex = tmp.find(",", redIndex);
+        commaIndex = tmp.find(',', redIndex);
         std::string redHexagons = tmp.substr(redIndex + target.length(), commaIndex - (redIndex + target.length()));
         int redTmp = std::stoi(redHexagons);
         //std::cout << redTmp << " red " << '\n';

@@ -544,8 +544,8 @@ auto GameBoard::pcGo() ->void{
 
     std::vector<std::map<std::array<int,2>, std::array<int,3>>> maxEnemy;
     for(auto hexagon : hexagonVec){
-        maxEnemy.push_back(calculateMoveNear(hexagon));
         maxEnemy.push_back(calculateMoveFar(hexagon));
+        maxEnemy.push_back(calculateMoveNear(hexagon));
     }
 
     sf::Vector2f origin = chooseRandomMove(maxEnemy);

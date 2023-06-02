@@ -1,0 +1,5 @@
+Blue hexagons: 4, Red hexagons: 3, Winner: None
+Blue hexagons: 5, Red hexagons: 4, Winner: None
+Blue hexagons: 8, Red hexagons: 5, Winner: None
+Blue hexagons: 9, Red hexagons: 21, Winner: Blue
+Blue hexagons: 23, Red hexagons: 21, Winner: Blue

@@ -38,9 +38,9 @@ private:
     std::fstream file;
     std::set<std::array<int,3>> score;
 
-    int redHex;
-    int blueHex;
-    int winner;
+    int redHex{};
+    int blueHex{};
+    int winner{};
 };
 
 

@@ -40,7 +40,7 @@ Hexagon::Hexagon(double rad, bool isVisible) {
 //    window.draw(hexagon);
 //}
 
-bool Hexagon::getIsVisible() {
+bool Hexagon::getIsVisible() const {
     return isVisible;
 }
 
@@ -83,7 +83,7 @@ void Hexagon::capture(bool playerCaptured) {
     }
 }
 
-bool Hexagon::isSelected() {
+bool Hexagon::isSelected() const {
     return selected;
 }
 
@@ -95,7 +95,7 @@ void Hexagon::setSecondRow(bool select) {
     secondRow = select;
 }
 
-bool Hexagon::isSecondRow() {
+bool Hexagon::isSecondRow() const {
     return secondRow;
 }
 
@@ -110,11 +110,11 @@ void Hexagon::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(hexagon, states);
 }
 
-bool Hexagon::getIsPredefined() {
+bool Hexagon::getIsPredefined() const{
     return isPredefined;
 }
 
-int Hexagon::getPredefinedPlayer() {
+int Hexagon::getPredefinedPlayer() const{
     return predefinedPlayer;
 }
 

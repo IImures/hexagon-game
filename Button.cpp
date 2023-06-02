@@ -32,11 +32,11 @@ void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(text, states);
 }
 
-int Button::getWight() {
+int Button::getWight() const {
     return wigth;
 }
 
-int Button::getHeight() {
+int Button::getHeight() const {
     return heigt;
 }
 
@@ -49,6 +49,6 @@ bool Button::checkForClick(sf::Event event) {
     }
 }
 
-std::string Button::getText() {
+std::string Button::getText() const {
     return text.getString();
 }

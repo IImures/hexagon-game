@@ -1,9 +1,4 @@
 
-#include <iostream>
-#include <algorithm>
-
-#include "Button.h"
-#include "ScoreWriter.h"
 #include "GameBoard.h"
 #include "Menu.h"
 #include "ScoreMenu.h"
@@ -25,7 +20,6 @@ sf::RenderWindow window(
 GameBoard board = GameBoard(width, height, &window, &inMenu);
 Menu menu = Menu(width, height, &inMenu, &inScoreMenu, &board, &window);
 ScoreMenu scoreMenu = ScoreMenu(width, height, &inMenu, &inScoreMenu, &window);
-//Computer pc = Computer(&board);
 
 auto pollEvents() -> void;
 

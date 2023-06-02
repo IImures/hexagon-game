@@ -15,9 +15,9 @@ public:
 
     void setPosition(float x, float y);
 
-    int getWight();
+    int getWight() const;
 
-    int getHeight();
+    int getHeight() const;
 
     /**
      * Used to check if button was clicked
@@ -26,7 +26,7 @@ public:
      */
     bool checkForClick(sf::Event event);
 
-    std::string getText();
+    std::string getText() const;
 
 private:
 

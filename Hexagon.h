@@ -23,7 +23,7 @@ public:
 
     bool checkForClick(sf::Event event);
 
-    bool getIsVisible();
+    bool getIsVisible() const;
 
     /**
      * True if someone on this hexagon
@@ -36,7 +36,7 @@ public:
      * to decide to copy hexagon or move
      * @return bool
      */
-    bool isSelected();
+    bool isSelected() const;
 
     /**
      * Ability to select hexagon then it became able to capture it
@@ -55,7 +55,7 @@ public:
      * to decide to copy hexagon or move
      * @return bool
      */
-    bool isSecondRow();
+    bool isSecondRow() const;
 
     /**
      * Used to capture hexagon
@@ -79,13 +79,13 @@ public:
      * Predefined hexagons used to regenerate map doesnt have impact on a gameplay
      * @return
      */
-    bool getIsPredefined();
+    bool getIsPredefined() const;
 
     /**
      * PredefinedPlayer hexagons used to regenerate map doesnt have impact on a gameplay
      * @return
      */
-    int getPredefinedPlayer();
+    int getPredefinedPlayer() const;
 
 private:
 
